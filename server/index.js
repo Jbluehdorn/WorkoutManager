@@ -22,25 +22,28 @@ app.use(bodyParser.urlencoded({
     extended:true
 }))
 
-//Include auth
-require('./auth')(app)
-
 //Register Middleware
 import userInViews from '../middleware/userInViews'
 import secured from '../middleware/secured'
 app.use(userInViews())
 
+//Include auth
+require('./auth')(app)
+
 //Register the api router
 app.use('/api', require('../app/router'))
 
 //Register routes
-app.use('/', require('../auth/auth'), secured())
+app.use('/', require('../auth/auth'))
 
-app.get('/*', (req, res) => {
+//Make public directory accessible
+app.use('/static', express.static(path.join(__dirname, '../public')))
+
+app.get('/*', secured(), (req, res) => {
     const context = {}
     const app = ReactDOMServer.renderToString(
         <StaticRouter location={req.url} context={context}>
-            <App />
+            <App user={req.user} />
         </StaticRouter>
     )
 
