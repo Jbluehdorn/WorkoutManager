@@ -1,11 +1,11 @@
+import './model'
 import {Router} from 'express'
 import controller from './controller'
 
 let router = Router()
 
-router.get('/current', controller.currUser)
-router.get('/test', (req, res) => {
-    res.send('test')
-})
+router.get('/', controller.list)
+router.get('/:query', controller.find)
+router.post('/', controller.create)
 
 export default router

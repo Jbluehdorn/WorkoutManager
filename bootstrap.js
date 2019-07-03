@@ -4,4 +4,4 @@ require('babel-register')({
 require('babel-polyfill')
 require('dotenv').config()
 
-module.exports = require('./server/index.js')
+module.exports = require('./server.js')
