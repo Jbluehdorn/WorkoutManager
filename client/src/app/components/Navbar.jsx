@@ -1,9 +1,8 @@
-import React, {useState} from 'react'
+import React from 'react'
 import { useAuth0 } from '../../react-auth0-wrapper'
 
 let NavBar = (props) => {
     const { logout } = useAuth0()
-    console.log(props.user)
 
     return (
         <div className="navbar navbar-dark bg-dark shadow p-0">
@@ -19,7 +18,7 @@ let NavBar = (props) => {
 
                 <ul className="navbar-nav ml-auto mr-3">
                     <li className="nav-item">
-                        <a className="nav-link" title="Log out" onClick={() => { logout() }}>
+                        <a className="nav-link" title="Log out" href="/" onClick={() => { logout() }}>
                             <i className="fa fa-sign-out"></i>
                         </a>
                     </li>

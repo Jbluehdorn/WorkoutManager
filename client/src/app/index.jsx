@@ -1,6 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import { BrowserRouter, Route, Switch } from 'react-router-dom'
-import PrivateRoute from './components/PrivateRoute'
+import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom'
 import { useAuth0 } from "../react-auth0-wrapper";
 import API from '../API'
 
@@ -8,7 +7,8 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import 'font-awesome/css/font-awesome.min.css'
 
 import NavBar from './components/Navbar'
-import Profile from './components/Profile'
+
+import {PlayerRoutes, CoachRoutes} from '../routes'
 
 let Index = () => {
     const {isAuthenticated, loginWithRedirect, loading, auth0User} = useAuth0()
@@ -33,18 +33,53 @@ let Index = () => {
         fetchUser()
     }, [isAuthenticated, loginWithRedirect, loading, auth0User, setUser])
 
-    if(!loading && !!isAuthenticated)
+    if(!loading && !!isAuthenticated && !!user) {
         return(
             <BrowserRouter>
                 <header>
                     <NavBar user={user}/>
                 </header>
                 <Switch>
-                    <Route path="/" exact />
-                    <PrivateRoute path="/profile" component={Profile} />
+                    { user.role.id === 1 &&
+                        CoachRoutes.map((route, key) => {
+                            if(!!route.redirect) {
+                                return (
+                                    <Route 
+                                        path={route.path} 
+                                        exact={!!route.exact} 
+                                        key={key} 
+                                        render={() => (
+                                            <Redirect to={route.redirect} />
+                                        )}
+                                    />
+                                )
+                            }
+
+                            return <Route path={route.path} component={route.component} key={key}/>
+                        })
+                    }
+                    { user.role.id === 2 &&
+                        PlayerRoutes.map((route, key) => {
+                            if(!!route.redirect) {
+                                return (
+                                    <Route 
+                                        path={route.path} 
+                                        exact={!!route.exact} 
+                                        key={key} 
+                                        render={() => (
+                                            <Redirect to={route.redirect} />
+                                        )}
+                                    />
+                                )
+                            }
+
+                            return <Route path={route.path} component={route.component} key={key}/>
+                        })
+                    }
                 </Switch>
             </BrowserRouter>
         )
+    }
     
     return(
         <div className="container text-center">
