@@ -10,11 +10,11 @@ let createUser = async data => {
     return query
 }
 
-let findUsers = () => User.find()
+let findUsers = () => User.find().populate('role')
 
-let findUser = id => User.findById(id)
+let findUser = id => User.findById(id).populate('role')
 
-let findByEmail = email => User.findOne({email: email})
+let findByEmail = email => User.findOne({email: email}).populate('role')
 
 module.exports = {
     createUser,

@@ -1,12 +1,37 @@
-import mongoose, {Schema} from 'mongoose'
+import mongoose, {Schema, mongo} from 'mongoose'
 
 let UserSchema = new Schema({
     name: String,
-    role_id: Schema.Types.ObjectId,
+    password: String,
+    role_id: Number,
     group_id: Schema.Types.ObjectId,
     email: String
 }, {
-    timestamps: true
+    timestamps: true,
+    toJSON: {
+        virtuals: true
+    },
+    toObject: {
+        virtuals: true
+    }
 })
 
-module.exports = mongoose.model('user', UserSchema)
+let RoleSchema = new Schema({
+    title: String,
+    id: Number
+})
+
+UserSchema.virtual('role', {
+    ref: 'role',
+    localField: 'role_id',
+    foreignField: 'id',
+    justOne: true
+})
+
+let RoleModel = mongoose.model('role', RoleSchema)
+let UserModel = mongoose.model('user', UserSchema)
+
+export {
+    RoleModel,
+    UserModel
+}
