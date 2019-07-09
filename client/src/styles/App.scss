@@ -1,0 +1,18 @@
+// @import '~css-reset-and-normalize/scss/reset-and-normalize';
+@import '~bootstrap/dist/css/bootstrap.min.css';
+@import '~font-awesome/css/font-awesome.min.css';
+
+@import './components/Sidebar';
+
+.nav-link {
+    text-decoration: none;
+    color: #333;
+
+    &:hover {
+        color: #555;
+    }
+
+    &.active {
+        color: #999;
+    }
+}
