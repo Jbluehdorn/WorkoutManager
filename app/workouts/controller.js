@@ -20,8 +20,7 @@ exports.list = async (req, res) => {
     }
 }
 
-exports.find = async (req, res) => {
-    console.log(req.params.id)
+exports.find = async (req, res) => { 
     try {
         let workout = await repo.findWorkout(req.params.id)
         console.log(`Workout #${workout.id} requested`)

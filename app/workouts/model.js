@@ -1,5 +1,6 @@
 import mongoose, {Schema, mongo} from 'mongoose'
 import { UserModel } from '../users/model'
+import MuscleGroupModel from '../muscleGroups/model'
 
 let WorkoutSchema = new Schema({
     duration: Number,
@@ -17,11 +18,6 @@ let WorkoutSchema = new Schema({
     }
 })
 
-let MuscleGroupSchema = new Schema({
-    id: Number,
-    title: String
-})
-
 WorkoutSchema.virtual('user', {
     ref: 'user',
     localField: 'user_id',
@@ -37,9 +33,5 @@ WorkoutSchema.virtual('muscle_group', {
 })
 
 let WorkoutModel = mongoose.model('workout', WorkoutSchema)
-let MuscleGroupModel = mongoose.model('muscle_group', MuscleGroupSchema)
 
-export {
-    WorkoutModel,
-    MuscleGroupModel
-}
+export default WorkoutModel
