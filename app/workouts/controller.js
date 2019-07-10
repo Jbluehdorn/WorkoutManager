@@ -2,11 +2,12 @@ import repo from './repository'
 
 exports.create = async (req, res) => {
     try {
+        console.log(req.body)
         let workout = await repo.createWorkout(req.body)
         console.log('Workout created')
         res.success(workout)
     } catch (err) {
-        res.erorr(err)
+        res.error(err)
     }
 }
 

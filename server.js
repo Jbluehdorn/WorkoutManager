@@ -16,6 +16,7 @@ app.use(customResponses)
 app.use(bodyParser.urlencoded({
     extended:true
 }))
+app.use(bodyParser.json())
 
 //Register the api router
 require('./app/api')(app)

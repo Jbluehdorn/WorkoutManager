@@ -13,7 +13,7 @@ class Workouts extends Component {
 
     render() {
         return (
-            <WorkoutLog />
+            <WorkoutLog user={window.user} />
         )
     }
 }

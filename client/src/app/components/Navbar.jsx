@@ -5,7 +5,7 @@ let NavBar = (props) => {
     const { logout } = useAuth0()
 
     return (
-        <div className="navbar navbar-dark bg-dark shadow p-0">
+        <div className="navbar navbar-dark bg-dark p-0">
             <a href="/" className="navbar-brand ml-2">
                     <img src="logo.png" className="mr-2" alt="Logo" height="30" />
 

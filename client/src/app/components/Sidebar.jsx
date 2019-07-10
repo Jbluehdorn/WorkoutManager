@@ -28,9 +28,9 @@ class Sidebar extends Component {
                         if(!route.hideMenuItem) {
                             return(
                                 <li className="nav-item" key={key}>
-                                    <Link className={`nav-link ${this.state.path === route.path ? 'active' : ''}`} to={route.path}>
+                                    <Link className={`nav-link text-center text-md-left ${this.state.path === route.path ? 'active' : ''}`} to={route.path}>
                                         <i className={`fa fa-${route.icon}`}></i> &nbsp;
-                                        {route.name}
+                                        <span className="d-md-inline d-none">{route.name}</span>
                                     </Link>
                                 </li>
                             )

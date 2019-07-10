@@ -49,10 +49,10 @@ const ConnectedIndex = (props) => {
                 </header>
                 <div className="container-fluid">
                     <div className="row">
-                        <div className="col-sm-2 bg-light p-0">
+                        <div className="col-2 bg-light p-0">
                             <Sidebar routes={routesToUse} />
                         </div>
-                        <div className="col-sm-10">
+                        <div className="col-10 pt-1">
                             <Switch>
                                 {
                                     routesToUse.map((route, key) => {
@@ -87,9 +87,5 @@ const ConnectedIndex = (props) => {
         </div>
     )
 }
-
-// const Index = connect(null, mapDispatchToProps)(ConnectedIndex)
-
-// export default Index
 
 export default ConnectedIndex
