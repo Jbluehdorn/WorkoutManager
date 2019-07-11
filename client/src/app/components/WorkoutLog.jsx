@@ -13,8 +13,8 @@ class WorkoutLog extends Component {
             user: props.user,
             allWorkouts: null,
             userWorkouts: [],
-            pages: [],
-            currentPage: 0,
+            pages: [[]],
+            page: 0,
             perPage: 5,
             formShown: false,
             allMuscleGroups: null,
@@ -32,6 +32,11 @@ class WorkoutLog extends Component {
         this.handleInputChange = this.handleInputChange.bind(this)
     }
 
+    componentDidMount() {
+        this.loadWorkouts()
+        this.loadMuscleGroups()
+    }
+
     async loadWorkouts() {
         try {
             let workouts = await API.get('workouts')
@@ -39,11 +44,17 @@ class WorkoutLog extends Component {
             let userWorkouts = workouts.data.body.filter((workout) => {
                 return workout.user_id === this.state.user.id
             })
+
+            userWorkouts.sort((a, b) => {
+                return new Date(b.date) - new Date(a.date)
+            })
             
             this.setState({
                 allWorkouts: workouts.data.body,
                 userWorkouts: userWorkouts
             })
+
+            this.paginateWorkouts()
         } catch(err) {
             console.log(err)
         }
@@ -79,7 +90,6 @@ class WorkoutLog extends Component {
             }
 
             let resp = await API.post('workouts', form)
-            console.log(resp)
 
             this.handleClose()
 
@@ -97,6 +107,48 @@ class WorkoutLog extends Component {
 
     handleClose() {
         this.setState({ formShown: false})
+    }
+
+    incrementPage() {
+        if(this.state.page >= 0 && this.state.page < this.state.pages.length - 1) {
+            this.setState({
+                page: this.state.page + 1
+            })
+        }
+    }
+
+    decrementPage() {
+        if(this.state.page < this.state.pages.length && this.state.page > 0) {
+            this.setState({
+                page: this.state.page - 1
+            })
+        }
+    }
+
+    goToPage(page) {
+        this.setState({
+            page: page
+        })
+    }
+
+    paginateWorkouts() {
+        let cursor = 0
+        let pages = []
+        let workouts = this.state.userWorkouts.slice()
+        let perPage = this.state.perPage
+
+        do {
+            let start = cursor * perPage
+            let end = start + perPage
+            let page = workouts.slice(start, end)
+            if(page.length > 0)
+                pages.push(page)
+            cursor++
+        } while(cursor < Math.floor(workouts.length / perPage) + 1)
+
+        this.setState({
+            pages: pages
+        })
     }
 
     handleInputChange(event) {
@@ -129,13 +181,9 @@ class WorkoutLog extends Component {
     }
 
     render() {
-        if(!!!this.state.allWorkouts)
-            this.loadWorkouts()
+        let page = this.state.pages[this.state.page] 
 
-        if(!!!this.state.allMuscleGroups)
-            this.loadMuscleGroups()
-
-        let workoutItems = this.state.userWorkouts.map((workout) => {
+        let workoutItems = page.map((workout) => {
             return ( 
                 <li className="list-group-item" key={workout._id}>
                     <span>{humanizeDuration(workout.duration * 60000, {delimiter: ' '})} of </span>
@@ -164,9 +212,34 @@ class WorkoutLog extends Component {
                         <ul className="list-group">
                             {workoutItems}
                         </ul>
+                        
+                        <ul className="pagination justify-content-center mt-1">
+                            <li className={`page-item ${this.state.page === 0 ? 'disabled' : ''}`}>
+                                <a href="#" className="page-link" onClick={() => this.decrementPage()}>
+                                    {'<<'}
+                                </a>
+                            </li>
+                            {
+                                this.state.pages.map((page, key) => {
+                                    return(
+                                        <li className={`page-item ${this.state.page === key ? 'disabled' : ''}`}>
+                                            <a href="#" className="page-link" onClick={() => this.goToPage(key)}>
+                                                {key + 1}
+                                            </a>
+                                        </li>
+                                    )
+                                })
+                            }
+                            <li className={`page-item ${this.state.page === this.state.pages.length - 1 ? 'disabled' : ''}`}>
+                                <a href="#" className="page-link" onClick={() => this.incrementPage()}>
+                                    {'>>'}
+                                </a>
+                            </li>
+                        </ul>
                     </div>
                 </div>
                 
+                {/* FORM MODAL */}
                 <div className={`modal ${this.state.formShown ? 'shown' : '' }`} role="dialog" tabIndex="-1">
                     <div className="modal-dialog">
                         <div className="modal-content">
