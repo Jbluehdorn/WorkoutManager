@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 
 import WorkoutLog from '../../components/WorkoutLog'
+import WorkoutTotals from '../../components/WorkoutTotals'
 
 class Workouts extends Component {
     constructor(props) {
@@ -13,7 +14,10 @@ class Workouts extends Component {
 
     render() {
         return (
-            <WorkoutLog user={window.user} />
+            <div>
+                <WorkoutTotals user={window.user} />
+                <WorkoutLog user={window.user} />
+            </div>
         )
     }
 }

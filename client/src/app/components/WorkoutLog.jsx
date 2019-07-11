@@ -200,13 +200,15 @@ class WorkoutLog extends Component {
             <div>
                 <div className="card">
                     <div className="card-header">
-                        <h1 className="card-title m-0 d-inline">
-                            Log
-                        </h1>
+                        <div className="d-flex justify-content-between">
+                            <h1 className="card-title m-0 d-inline-block">
+                                Log
+                            </h1>
 
-                        <button className="btn btn-primary pull-right mt-2" onClick={this.handleShowForm}>
-                            <i className="fa fa-plus"></i>
-                        </button>
+                            <button className="btn btn-primary text-right d-inline align-text-bottom" onClick={this.handleShowForm}>
+                                <i className="fa fa-plus"></i>
+                            </button>
+                        </div>
                     </div>
                     <div className="card-body">
                         <ul className="list-group">
