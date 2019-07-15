@@ -27,7 +27,7 @@ class Totals extends Component {
 
         this.state = {
             user: props.user,
-            userWorkouts: [],
+            userWorkouts: props.workouts,
             muscleGroups: [],
             granularity: GRANULARITIES[0]
         }
@@ -36,24 +36,14 @@ class Totals extends Component {
     }
 
     componentDidMount() {
-        this.loadWorkouts()
         this.loadMuscleGroups()
     }
 
-    async loadWorkouts() {
-        try {
-            let resp = await API.get('workouts')
-            let allWorkouts = resp.data.body
-            
-            let userWorkouts = allWorkouts.filter(workout => {
-                return workout.user_id === this.state.user._id
-            })
-
+    componentDidUpdate(prevProps) {
+        if(prevProps !== this.props) {
             this.setState({
-                userWorkouts: userWorkouts
+                userWorkouts: this.props.workouts
             })
-        } catch(err) {
-            console.log(err)
         }
     }
 
@@ -82,13 +72,10 @@ class Totals extends Component {
     }
 
     render() {
-        console.log(this.state.userWorkouts)
-
         let muscleGroups = this.state.muscleGroups.map(group => {
             let groupClone = Object.assign({}, group)
 
             this.state.userWorkouts.forEach(workout => {
-                console.log(moment.utc(workout.date).format('MMMM DD YYYY'))
                 if(this.state.granularity.range.contains(moment(workout.date), {exclusive: false}) && group.id === workout.muscle_group_id) {
                     groupClone.duration += workout.duration
                 }

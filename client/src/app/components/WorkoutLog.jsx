@@ -11,9 +11,8 @@ class WorkoutLog extends Component {
 
         this.state = {
             user: props.user,
-            allWorkouts: null,
-            userWorkouts: [],
-            pages: [[]],
+            userWorkouts: props.workouts,
+            pages: [],
             page: 0,
             perPage: 5,
             formShown: false,
@@ -24,7 +23,8 @@ class WorkoutLog extends Component {
                 muscle_group: undefined,
                 notes: '',
                 date: moment().format(DATE_FORMAT)
-            }
+            },
+            onUpdate: props.onUpdate
         }
 
         this.handleClose = this.handleClose.bind(this)
@@ -32,32 +32,19 @@ class WorkoutLog extends Component {
         this.handleInputChange = this.handleInputChange.bind(this)
     }
 
-    componentDidMount() {
-        this.loadWorkouts()
-        this.loadMuscleGroups()
+    componentDidUpdate(prevProps) {
+        if(this.props.workouts !== prevProps.workouts) {
+            let workouts = this.props.workouts
+            let pages = this.paginateWorkouts(workouts)
+            this.setState({
+                userWorkouts: workouts,
+                pages: pages
+            })
+        }
     }
 
-    async loadWorkouts() {
-        try {
-            let workouts = await API.get('workouts')
-
-            let userWorkouts = workouts.data.body.filter((workout) => {
-                return workout.user_id === this.state.user.id
-            })
-
-            userWorkouts.sort((a, b) => {
-                return new Date(b.date) - new Date(a.date)
-            })
-            
-            this.setState({
-                allWorkouts: workouts.data.body,
-                userWorkouts: userWorkouts
-            })
-
-            this.paginateWorkouts()
-        } catch(err) {
-            console.log(err)
-        }
+    componentDidMount() {
+        this.loadMuscleGroups()
     }
 
     async loadMuscleGroups() {
@@ -93,7 +80,7 @@ class WorkoutLog extends Component {
 
             this.handleClose()
 
-            this.loadWorkouts()
+            this.props.onChange()
         } catch(err) {
             console.log(err)
         }
@@ -131,10 +118,9 @@ class WorkoutLog extends Component {
         })
     }
 
-    paginateWorkouts() {
+    paginateWorkouts(workouts) {
         let cursor = 0
         let pages = []
-        let workouts = this.state.userWorkouts.slice()
         let perPage = this.state.perPage
 
         do {
@@ -146,9 +132,7 @@ class WorkoutLog extends Component {
             cursor++
         } while(cursor < Math.floor(workouts.length / perPage) + 1)
 
-        this.setState({
-            pages: pages
-        })
+        return pages
     }
 
     handleInputChange(event) {
@@ -183,7 +167,7 @@ class WorkoutLog extends Component {
     render() {
         let page = this.state.pages[this.state.page] 
 
-        let workoutItems = page.map((workout) => {
+        let workoutItems = !!page ? page.map((workout) => {
             return ( 
                 <li className="list-group-item" key={workout._id}>
                     <span>{humanizeDuration(workout.duration * 60000, {delimiter: ' '})} of </span>
@@ -194,7 +178,7 @@ class WorkoutLog extends Component {
                     <i className="fa fa-trash pull-right mt-1"></i>
                 </li> 
             )
-        })
+        }) : [<li className="list-group-item">There's nothing here</li>];
 
         return (
             <div>
