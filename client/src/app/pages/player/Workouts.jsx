@@ -29,6 +29,10 @@ class Workouts extends Component {
                 return workout.user_id = this.state.user._id;
             })
 
+            userWorkouts.sort((a, b) => {
+                return new Date(b.date) - new Date(a.date)
+            })
+
             this.setState({
                 workouts: userWorkouts
             })

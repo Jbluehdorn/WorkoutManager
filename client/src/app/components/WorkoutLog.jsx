@@ -23,8 +23,7 @@ class WorkoutLog extends Component {
                 muscle_group: undefined,
                 notes: '',
                 date: moment().format(DATE_FORMAT)
-            },
-            onUpdate: props.onUpdate
+            }
         }
 
         this.handleClose = this.handleClose.bind(this)
@@ -164,6 +163,16 @@ class WorkoutLog extends Component {
         })
     }
 
+    async deleteWorkout(workoutID) {
+        try {
+            await API.delete(`workouts/${workoutID}`)
+
+            this.props.onChange()
+        } catch(err) {
+            console.log(err)
+        }
+    }
+
     render() {
         let page = this.state.pages[this.state.page] 
 
@@ -175,7 +184,7 @@ class WorkoutLog extends Component {
                     <span> logged on </span>
                     <strong>{moment.utc(workout.date).format('dddd, MMMM Do')}</strong>
 
-                    <i className="fa fa-trash pull-right mt-1"></i>
+                    <i className="fa fa-trash pull-right mt-1 clickable" onClick={() => this.deleteWorkout(workout._id)}></i>
                 </li> 
             )
         }) : [<li className="list-group-item">There's nothing here</li>];

@@ -14,8 +14,11 @@ let findWorkouts = () => Workout.find().populate('user').populate('muscle_group'
 
 let findWorkout = id => Workout.findById(id).populate('user').populate('muscle_group')
 
+let deleteWorkout = id => Workout.deleteOne({_id: id})
+
 module.exports = {
     createWorkout,
     findWorkouts,
-    findWorkout
+    findWorkout,
+    deleteWorkout
 }

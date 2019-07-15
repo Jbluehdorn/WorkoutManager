@@ -2,7 +2,6 @@ import repo from './repository'
 
 exports.create = async (req, res) => {
     try {
-        console.log(req.body)
         let workout = await repo.createWorkout(req.body)
         console.log('Workout created')
         res.success(workout)
@@ -28,5 +27,15 @@ exports.find = async (req, res) => {
         res.success(workout)
     } catch(err) {
         res.error(err)
+    }
+}
+
+exports.delete = async(req, res) => {
+    try {
+        await repo.deleteWorkout(req.params.id)
+        console.log(`Deleted workout ${req.params.id}`)
+        res.success()
+    } catch(err) {
+        console.log(err)
     }
 }

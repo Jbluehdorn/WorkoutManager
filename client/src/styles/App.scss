@@ -22,3 +22,9 @@
         display: block;
     }
 }
+
+.clickable {
+    &:hover {
+        cursor: pointer
+    }
+}
