@@ -63,7 +63,6 @@ class Totals extends Component {
     }
 
     handleSelectChange(e) {
-        console.log(e.target.value)
         let granularity = GRANULARITIES.find(gran => gran.title === e.target.value)
 
         this.setState({
