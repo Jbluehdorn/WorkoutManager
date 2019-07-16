@@ -7,9 +7,12 @@ class Goals extends Component {
 
         this.state = {
             players: [],
+            filteredPlayers: [],
+            selectedPlayers: [],
             pages: [],
             currPage: 0,
-            perPage: 2
+            perPage: 5,
+            allGroups: []
         }
     }
 
@@ -18,10 +21,11 @@ class Goals extends Component {
      */
     componentDidMount() {
         this.loadPlayers()
+        this.loadGroups()
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if(prevState.players != this.state.players) {
+        if(prevState.filteredPlayers != this.state.filteredPlayers) {
             this.paginatePlayers()
         }
     }
@@ -52,7 +56,7 @@ class Goals extends Component {
     }
 
     paginatePlayers() {
-        let players = this.state.players.slice()
+        let players = this.state.filteredPlayers.slice()
         let cursor = 0
         let pages = []
         let perPage = this.state.perPage
@@ -71,6 +75,38 @@ class Goals extends Component {
         })
     }
 
+    select(player) {
+        let selected = this.state.selectedPlayers.slice()
+        let filtered = this.state.filteredPlayers.slice()
+
+        filtered = filtered.filter(filteredPlayer => {
+            return filteredPlayer._id != player._id
+        })
+
+        selected.push(player)
+
+        this.setState({
+            selectedPlayers: selected,
+            filteredPlayers: filtered
+        })
+    }
+
+    deselect(player) {
+        let selected = this.state.selectedPlayers.slice()
+        let filtered = this.state.filteredPlayers.slice()
+        
+        selected = selected.filter(selectedPlayer => {
+            return selectedPlayer._id != player._id
+        })
+
+        filtered.push(player)
+
+        this.setState({
+            selectedPlayers: selected,
+            filteredPlayers: filtered
+        })
+    }
+
     async loadPlayers() {
         try {
             let resp = await API.get(`users`)
@@ -81,7 +117,21 @@ class Goals extends Component {
             })
 
             this.setState({
-                players: players
+                players: players,
+                filteredPlayers: players
+            })
+        } catch(err) {
+            console.log(err)
+        }
+    }
+
+    async loadGroups() {
+        try {
+            let resp = await API.get(`positionGroups`)
+            let groups = resp.data.body
+
+            this.setState({
+                allGroups: groups
             })
         } catch(err) {
             console.log(err)
@@ -93,7 +143,11 @@ class Goals extends Component {
 
         let pageItems = page !== undefined ? page.map((player, key) => {
             return (
-                <li className="list-group-item list-group-item-action clickable" key={key}>
+                <li 
+                    className="list-group-item list-group-item-action clickable" 
+                    onClick={() => this.select(player)}
+                    key={key}
+                >
                     {player.name}
                 </li>
             )
@@ -105,10 +159,22 @@ class Goals extends Component {
                     <div className="card-header">
                         <h1 className="card-title mb-0">
                             Selected
+
+                            &nbsp;<span className="badge badge-secondary">{this.state.selectedPlayers.length}</span>
                         </h1>
                     </div>
                     <div className="card-body">
-
+                        {
+                            this.state.selectedPlayers.map((player, key) => {
+                                return (
+                                    <span className="badge badge-pill badge-secondary mr-1">
+                                        {player.name}
+                                        &nbsp;
+                                        <i className="fa fa-close clickable" onClick={() => this.deselect(player)}></i>
+                                    </span>
+                                )
+                            })
+                        }
                     </div>
                 </div>
                 <div className="card">
