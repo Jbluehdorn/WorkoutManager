@@ -26,11 +26,15 @@ class Goals extends Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if(prevState.filteredPlayers != this.state.filteredPlayers) {
+        if(prevState.filteredPlayers !== this.state.filteredPlayers) {
             this.paginatePlayers()
         }
 
-        if(prevState.searchPredicate != this.state.searchPredicate) {
+        if(prevState.selectedPlayers !== this.state.selectedPlayers) {
+            this.filter()
+        }
+
+        if(prevState.searchPredicate !== this.state.searchPredicate) {
             this.filter()
         }
     }
@@ -58,6 +62,14 @@ class Goals extends Component {
         this.setState({
             currPage: page
         })
+    }
+
+    isFirstPage() {
+        return this.state.currPage === 0
+    }
+
+    isLastPage() {
+        return this.state.currPage === this.state.pages.length - 1 || this.state.pages.length === 0
     }
 
     paginatePlayers() {
@@ -96,6 +108,18 @@ class Goals extends Component {
         })
     }
 
+    selectAll() {
+        let selected = this.state.selectedPlayers.slice()
+        let filtered = this.state.filteredPlayers.slice()
+
+        selected = selected.concat(filtered)
+
+        this.setState({
+            selectedPlayers: selected,
+            filteredPlayers: [] 
+        })
+    }
+
     deselect(player) {
         let selected = this.state.selectedPlayers.slice()
         let filtered = this.state.filteredPlayers.slice()
@@ -110,22 +134,24 @@ class Goals extends Component {
             selectedPlayers: selected,
             filteredPlayers: filtered
         })
-
-        this.filter()
     }
 
     handleSearchPredicateChange(e) {
-        console.log('A thing')
         this.setState({
             searchPredicate: e.target.value
         })
     }
 
     filter() {
-        let filtered = this.state.players.slice()
+        let allPlayers = this.state.players.slice()
+        let selected = this.state.selectedPlayers.slice()
+
+        let filtered = allPlayers.filter(player => {
+            return player.name.toLowerCase().includes(this.state.searchPredicate.toLowerCase())
+        })
 
         filtered = filtered.filter(player => {
-            return player.name.toLowerCase().includes(this.state.searchPredicate.toLowerCase())
+            return selected.find(selPlayer => { return player._id === selPlayer._id }) === undefined
         })
 
         this.setState({
@@ -219,18 +245,20 @@ class Goals extends Component {
                                     value={this.state.searchPredicate}
                                     onChange={(e) => this.handleSearchPredicateChange(e)}/>
                             </div>
+
+                            <div className="col">
+                                <button className="btn btn-secondary" onClick={() => this.selectAll()}>
+                                    Select All
+                                </button>
+                            </div>
                         </div>
 
                         <ul className="list-group">
                             {pageItems}
                         </ul>
 
-                        <p className="text-center mb-0 mt-1 small">
-                            Banana
-                        </p>
-
                         <ul className="pagination justify-content-center mt-1 mb-0">
-                            <li className={`page-item ${this.state.currPage === 0 ? 'disabled' : ''}`}>
+                            <li className={`page-item ${this.isFirstPage() ? 'disabled' : ''}`}>
                                 <a href="#" className="page-link" onClick={() => this.decrementPage()}>
                                     {'<<'}
                                 </a>
@@ -246,7 +274,7 @@ class Goals extends Component {
                                     )
                                 })
                             }
-                            <li className={`page-item ${this.state.currPage === this.state.pages.length - 1 ? 'disabled' : ''}`}>
+                            <li className={`page-item ${this.isLastPage() ? 'disabled' : ''}`}>
                                 <a href="#" className="page-link" onClick={() => this.incrementPage()}>
                                     {'>>'}
                                 </a>
