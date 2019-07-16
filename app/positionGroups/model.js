@@ -1,7 +1,7 @@
 import mongoose, {Schema, mongo} from 'mongoose'
 
 let positionGroupSchema = new Schema({
-    id: String,
+    id: Number,
     title: String
 })
 

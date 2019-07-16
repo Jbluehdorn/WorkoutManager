@@ -1,10 +1,11 @@
 import mongoose, {Schema, mongo} from 'mongoose'
+import positionGroupSchema from '../positionGroups/model'
 
 let UserSchema = new Schema({
     name: String,
     password: String,
     role_id: Number,
-    group_id: Schema.Types.ObjectId,
+    group_id: Number,
     email: String
 }, {
     timestamps: true,
@@ -24,6 +25,13 @@ let RoleSchema = new Schema({
 UserSchema.virtual('role', {
     ref: 'role',
     localField: 'role_id',
+    foreignField: 'id',
+    justOne: true
+})
+
+UserSchema.virtual('position_group', {
+    ref: 'position_group',
+    localField: 'group_id',
     foreignField: 'id',
     justOne: true
 })

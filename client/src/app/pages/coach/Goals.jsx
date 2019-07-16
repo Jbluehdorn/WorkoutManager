@@ -12,7 +12,8 @@ class Goals extends Component {
             pages: [],
             currPage: 0,
             perPage: 5,
-            allGroups: []
+            allGroups: [],
+            searchPredicate: ''
         }
     }
 
@@ -27,6 +28,10 @@ class Goals extends Component {
     componentDidUpdate(prevProps, prevState) {
         if(prevState.filteredPlayers != this.state.filteredPlayers) {
             this.paginatePlayers()
+        }
+
+        if(prevState.searchPredicate != this.state.searchPredicate) {
+            this.filter()
         }
     }
 
@@ -103,6 +108,27 @@ class Goals extends Component {
 
         this.setState({
             selectedPlayers: selected,
+            filteredPlayers: filtered
+        })
+
+        this.filter()
+    }
+
+    handleSearchPredicateChange(e) {
+        console.log('A thing')
+        this.setState({
+            searchPredicate: e.target.value
+        })
+    }
+
+    filter() {
+        let filtered = this.state.players.slice()
+
+        filtered = filtered.filter(player => {
+            return player.name.toLowerCase().includes(this.state.searchPredicate.toLowerCase())
+        })
+
+        this.setState({
             filteredPlayers: filtered
         })
     }
@@ -184,9 +210,24 @@ class Goals extends Component {
                         </h1>
                     </div>
                     <div className="card-body">
+                        <div className="form-row mb-1">
+                            <div className="col">
+                                <input 
+                                    type="text" 
+                                    className="form-control" 
+                                    placeholder="Search..." 
+                                    value={this.state.searchPredicate}
+                                    onChange={(e) => this.handleSearchPredicateChange(e)}/>
+                            </div>
+                        </div>
+
                         <ul className="list-group">
                             {pageItems}
                         </ul>
+
+                        <p className="text-center mb-0 mt-1 small">
+                            Banana
+                        </p>
 
                         <ul className="pagination justify-content-center mt-1 mb-0">
                             <li className={`page-item ${this.state.currPage === 0 ? 'disabled' : ''}`}>
