@@ -35,6 +35,8 @@ class Sidebar extends Component {
                                 </li>
                             )
                         }
+
+                        return null
                     })
                 }
             </ul>

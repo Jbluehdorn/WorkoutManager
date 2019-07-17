@@ -11,7 +11,7 @@ class Goals extends Component {
             selectedPlayers: [],
             pages: [],
             currPage: 0,
-            perPage: 5,
+            perPage: 2,
             allGroups: [],
             searchPredicate: '',
             positionGroupPredicate: null
@@ -98,7 +98,7 @@ class Goals extends Component {
         let filtered = this.state.filteredPlayers.slice()
 
         filtered = filtered.filter(filteredPlayer => {
-            return filteredPlayer._id != player._id
+            return filteredPlayer._id !== player._id
         })
 
         selected.push(player)
@@ -126,7 +126,7 @@ class Goals extends Component {
         let filtered = this.state.filteredPlayers.slice()
         
         selected = selected.filter(selectedPlayer => {
-            return selectedPlayer._id != player._id
+            return selectedPlayer._id !== player._id
         })
 
         filtered.push(player)
@@ -219,7 +219,7 @@ class Goals extends Component {
                     {player.name}
                 </li>
             )
-        }) : [<li className="list-group-item">There's nothing here</li>]
+        }) : [<li className="list-group-item" key={-1}>There's nothing here</li>]
 
         return (
             <div>
@@ -288,25 +288,25 @@ class Goals extends Component {
 
                         <ul className="pagination justify-content-center mt-1 mb-0">
                             <li className={`page-item ${this.isFirstPage() ? 'disabled' : ''}`}>
-                                <a href="#" className="page-link" onClick={() => this.decrementPage()}>
+                                <button className="page-link" onClick={() => this.decrementPage()}>
                                     {'<<'}
-                                </a>
+                                </button>
                             </li>
                             {
                                 this.state.pages.map((page, key) => {
                                     return (
-                                        <li className={`page-item ${this.state.currPage === key ? 'disabled' : ''}`}>
-                                            <a href="#" className="page-link" onClick={() => this.goToPage(key)}>
+                                        <li className={`page-item ${this.state.currPage === key ? 'disabled' : ''}`} key={key}>
+                                            <button className="page-link" onClick={() => this.goToPage(key)}>
                                                 {key + 1}
-                                            </a>
+                                            </button>
                                         </li>
                                     )
                                 })
                             }
                             <li className={`page-item ${this.isLastPage() ? 'disabled' : ''}`}>
-                                <a href="#" className="page-link" onClick={() => this.incrementPage()}>
+                                <button className="page-link" onClick={() => this.incrementPage()}>
                                     {'>>'}
-                                </a>
+                                </button>
                             </li>
                         </ul>
                     </div>

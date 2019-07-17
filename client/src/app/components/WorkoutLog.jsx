@@ -75,7 +75,7 @@ class WorkoutLog extends Component {
                 date: this.state.form.date
             }
 
-            let resp = await API.post('workouts', form)
+            await API.post('workouts', form)
 
             this.handleClose()
 
@@ -148,7 +148,7 @@ class WorkoutLog extends Component {
             case 'select-one':
                 value = this.state.allMuscleGroups.find((group) => {
                     console.log(group._id, event.target.value)
-                    return group._id == event.target.value
+                    return group._id === event.target.value
                 })
                 break
             default:
@@ -210,25 +210,25 @@ class WorkoutLog extends Component {
                         
                         <ul className="pagination justify-content-center mt-1">
                             <li className={`page-item ${this.state.page === 0 ? 'disabled' : ''}`}>
-                                <a href="#" className="page-link" onClick={() => this.decrementPage()}>
+                                <button className="page-link" onClick={() => this.decrementPage()}>
                                     {'<<'}
-                                </a>
+                                </button>
                             </li>
                             {
                                 this.state.pages.map((page, key) => {
                                     return(
                                         <li className={`page-item ${this.state.page === key ? 'disabled' : ''}`}>
-                                            <a href="#" className="page-link" onClick={() => this.goToPage(key)}>
+                                            <button className="page-link" onClick={() => this.goToPage(key)}>
                                                 {key + 1}
-                                            </a>
+                                            </button>
                                         </li>
                                     )
                                 })
                             }
                             <li className={`page-item ${this.state.page === this.state.pages.length - 1 ? 'disabled' : ''}`}>
-                                <a href="#" className="page-link" onClick={() => this.incrementPage()}>
+                                <button className="page-link" onClick={() => this.incrementPage()}>
                                     {'>>'}
-                                </a>
+                                </button>
                             </li>
                         </ul>
                     </div>

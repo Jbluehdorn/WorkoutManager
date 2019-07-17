@@ -35,6 +35,7 @@ const ConnectedIndex = (props) => {
                     case 2:
                         setRoutesToUse(CoachRoutes)
                         break 
+                    default:
                 }
             }
         }
