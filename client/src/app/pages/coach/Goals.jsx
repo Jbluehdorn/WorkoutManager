@@ -11,10 +11,13 @@ class Goals extends Component {
             selectedPlayers: [],
             pages: [],
             currPage: 0,
-            perPage: 2,
-            allGroups: [],
+            perPage: 10,
+            allPositionGroups: [],
             searchPredicate: '',
-            positionGroupPredicate: null
+            positionGroupPredicate: null,
+            formShown: false,
+            muscleGroups: [],
+            saving: false
         }
     }
 
@@ -23,7 +26,8 @@ class Goals extends Component {
      */
     componentDidMount() {
         this.loadPlayers()
-        this.loadGroups()
+        this.loadPositionGroups()
+        this.loadMuscleGroups()
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -137,6 +141,13 @@ class Goals extends Component {
         })
     }
 
+    deselectAll() {
+        this.setState({
+            selectedPlayers: [],
+            filteredPlayers: this.state.players.slice()
+        })
+    }
+
     handleSearchPredicateChange(e) {
         this.setState({
             searchPredicate: e.target.value
@@ -146,7 +157,7 @@ class Goals extends Component {
     handlePositionSelectChange(e) {
         let groupID = parseInt(e.target.value)
 
-        let groupPredicate = this.state.allGroups.find(group => {
+        let groupPredicate = this.state.allPositionGroups.find(group => {
             return group.id === groupID
         })
 
@@ -175,6 +186,38 @@ class Goals extends Component {
         })
     }
 
+    closeModal() {
+        this.setState({
+            formShown: false
+        })
+    }
+
+    updateGroupDuration(e, groupID) {
+        let duration = e.target.value
+        let groups = this.state.muscleGroups.slice()
+
+        groups.forEach(group => {
+            if(group.id === groupID)
+                group.duration = duration
+        })
+
+        this.setState({
+            muscleGroups: groups
+        })
+    }
+
+    resetMuscleGroups() {
+        let groups = this.state.muscleGroups.slice()
+
+        groups.forEach(group => {
+            group.duration = 0
+        })
+
+        this.setState({
+            muscleGroups: groups
+        })
+    }
+
     async loadPlayers() {
         try {
             let resp = await API.get(`users`)
@@ -193,17 +236,61 @@ class Goals extends Component {
         }
     }
 
-    async loadGroups() {
+    async loadPositionGroups() {
         try {
             let resp = await API.get(`positionGroups`)
             let groups = resp.data.body
 
             this.setState({
-                allGroups: groups
+                allPositionGroups: groups
             })
         } catch(err) {
             console.log(err)
         }
+    }
+    
+    async loadMuscleGroups() {
+        try {
+            let resp = await API.get(`muscleGroups`)
+            let muscleGroups = resp.data.body
+
+            muscleGroups.forEach(group => {
+                group.duration = 0
+            })
+
+            this.setState({
+                muscleGroups: muscleGroups
+            })
+        } catch(err) {
+            console.log(err)
+        }
+    }
+
+    async saveGoals() {
+        let selectedPlayers = this.state.selectedPlayers.slice()
+        let muscleGroups = this.state.muscleGroups.slice()
+
+        this.setState({ saving: true})
+
+        try {
+            selectedPlayers.forEach(player => {
+                muscleGroups.forEach(async group => {
+                    await API.post(`goals`, {
+                        user_id: player._id,
+                        muscle_group_id: group.id,
+                        duration: group.duration
+                    })
+                })
+            })
+
+            this.resetMuscleGroups()
+            this.deselectAll()
+            this.closeModal()
+        } catch(err) {
+            console.log(err)
+        }
+
+        this.setState({ saving: false })
     }
 
     render() {
@@ -216,7 +303,7 @@ class Goals extends Component {
                     onClick={() => this.select(player)}
                     key={key}
                 >
-                    {player.name}
+                    {player.name} - {player.position_group.title}
                 </li>
             )
         }) : [<li className="list-group-item" key={-1}>There's nothing here</li>]
@@ -232,17 +319,28 @@ class Goals extends Component {
                         </h1>
                     </div>
                     <div className="card-body">
-                        {
-                            this.state.selectedPlayers.map((player, key) => {
-                                return (
-                                    <span className="badge badge-pill badge-secondary mr-1">
-                                        {player.name}
-                                        &nbsp;
-                                        <i className="fa fa-close clickable" onClick={() => this.deselect(player)}></i>
-                                    </span>
-                                )
-                            })
-                        }
+                        <div className="h4">
+                            {
+                                this.state.selectedPlayers.map((player, key) => {
+                                    return (
+                                        <span className="badge badge-pill badge-secondary mr-1" key={key}>
+                                            {player.name}
+                                            &nbsp;
+                                            <i className="fa fa-close clickable" onClick={() => this.deselect(player)}></i>
+                                        </span>
+                                    )
+                                })
+                            }
+                        </div>
+
+                        <div className="text-right">
+                            <button className="btn btn-primary mr-1" disabled={this.state.selectedPlayers.length === 0} onClick={() => this.setState({formShown: true})}>
+                                Set Goals <i className="fa fa-pencil"></i>
+                            </button>
+                            <button className="btn btn-danger" onClick={() => this.deselectAll()}>
+                                Remove All <i className="fa fa-times-circle"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <div className="card">
@@ -266,7 +364,7 @@ class Goals extends Component {
                                 <select className="form-control" onChange={(e) => this.handlePositionSelectChange(e)}>
                                     <option value={-1}>All Positions</option>
                                     {
-                                        this.state.allGroups.map((group, key) => {
+                                        this.state.allPositionGroups.map((group, key) => {
                                             return (
                                                 <option value={group.id} key={key}>{group.title}</option>
                                             )
@@ -309,6 +407,47 @@ class Goals extends Component {
                                 </button>
                             </li>
                         </ul>
+                    </div>
+                </div>
+
+                 {/* SET GOALS MODAL */}
+                <div className={`modal ${this.state.formShown ? 'shown' : ''}`} role="dialog" tabIndex="1">
+                    <div className="modal-dialog shadow-lg">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h1 className="modal-title mb-0">
+                                    Goals
+                                </h1>
+                            </div>
+                            <div className="modal-body">
+                                {
+                                    this.state.muscleGroups.map((group, key) => {
+                                        return (
+                                            <div className="form-group" key={key}>
+                                                <label>{group.title} - {group.duration} mins</label>
+                                                <input 
+                                                    type="range" 
+                                                    className="form-control" 
+                                                    value={group.duration} 
+                                                    onChange={(e) => this.updateGroupDuration(e, group.id)}
+                                                    step="5" 
+                                                    min="0" 
+                                                    max="180"/>
+                                            </div>
+                                        )
+                                    })
+                                }
+
+                                <div className="text-right">
+                                    <button className="btn btn-primary mr-1" onClick={() => this.saveGoals()} disabled={this.state.saving}>
+                                        Save
+                                    </button>
+                                    <button className="btn btn-secondary" onClick={() => this.closeModal()}>
+                                        Close
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

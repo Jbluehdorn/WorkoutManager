@@ -1,5 +1,6 @@
 import mongoose from 'mongoose'
 import moment from 'moment'
+import _ from 'lodash'
 
 let start = moment.utc().startOf('week').add(1, 'day')
 let end = moment.utc().endOf('week').add(1, 'day')
@@ -14,7 +15,7 @@ let createGoal = async data => {
     let query = await goal.save()
 
     activeGoals.forEach(async active => {
-        if(active.muscle_group_id === query.muscle_group_id)
+        if(active.muscle_group_id === query.muscle_group_id && _.isEqual(query.user_id, active.user_id))
             await removeGoal(active.id)
     })
 

@@ -12,13 +12,11 @@ exports.create = async(req, res) => {
 
 exports.list = async(req, res) => {
     let onlyActive = req.query.active
-    console.log(req.query.active)
     try {
         let goals = onlyActive ? await repo.findActiveGoals() : await repo.findGoals()
         console.log(`${onlyActive ? 'Active' : 'All'} Goals requested`)
         res.success(goals)
     } catch(err) {
-        console.log(err)
         res.error(err)
     }
 }

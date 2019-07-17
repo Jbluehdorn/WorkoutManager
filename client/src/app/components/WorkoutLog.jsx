@@ -236,7 +236,7 @@ class WorkoutLog extends Component {
                 
                 {/* FORM MODAL */}
                 <div className={`modal ${this.state.formShown ? 'shown' : '' }`} role="dialog" tabIndex="-1">
-                    <div className="modal-dialog">
+                    <div className="modal-dialog shadow-lg">
                         <div className="modal-content">
                             <div className="modal-header">
                                 <div className="modal-title">
