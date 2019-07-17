@@ -13,7 +13,8 @@ class Goals extends Component {
             currPage: 0,
             perPage: 5,
             allGroups: [],
-            searchPredicate: ''
+            searchPredicate: '',
+            positionGroupPredicate: null
         }
     }
 
@@ -34,7 +35,7 @@ class Goals extends Component {
             this.filter()
         }
 
-        if(prevState.searchPredicate !== this.state.searchPredicate) {
+        if(prevState.searchPredicate !== this.state.searchPredicate || prevState.positionGroupPredicate !== this.state.positionGroupPredicate) {
             this.filter()
         }
     }
@@ -142,12 +143,27 @@ class Goals extends Component {
         })
     }
 
+    handlePositionSelectChange(e) {
+        let groupID = parseInt(e.target.value)
+
+        let groupPredicate = this.state.allGroups.find(group => {
+            return group.id === groupID
+        })
+
+        this.setState({
+            positionGroupPredicate: groupPredicate
+        })
+    }
+
     filter() {
         let allPlayers = this.state.players.slice()
         let selected = this.state.selectedPlayers.slice()
 
         let filtered = allPlayers.filter(player => {
-            return player.name.toLowerCase().includes(this.state.searchPredicate.toLowerCase())
+            let playerMatchesSearchPredicate = player.name.toLowerCase().includes(this.state.searchPredicate.toLowerCase())
+            let playerMatchesGroupPredicate = !!this.state.positionGroupPredicate ? player.position_group.id === this.state.positionGroupPredicate.id : true
+            
+            return playerMatchesGroupPredicate && playerMatchesSearchPredicate
         })
 
         filtered = filtered.filter(player => {
@@ -244,6 +260,19 @@ class Goals extends Component {
                                     placeholder="Search..." 
                                     value={this.state.searchPredicate}
                                     onChange={(e) => this.handleSearchPredicateChange(e)}/>
+                            </div>
+
+                            <div className="col">
+                                <select className="form-control" onChange={(e) => this.handlePositionSelectChange(e)}>
+                                    <option value={-1}>All Positions</option>
+                                    {
+                                        this.state.allGroups.map((group, key) => {
+                                            return (
+                                                <option value={group.id} key={key}>{group.title}</option>
+                                            )
+                                        })
+                                    }
+                                </select>
                             </div>
 
                             <div className="col">
