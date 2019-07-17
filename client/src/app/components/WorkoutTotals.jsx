@@ -83,6 +83,10 @@ class Totals extends Component {
             return groupClone
         })
 
+        let dataItems = muscleGroups.map(group => {
+            return Math.round((group.duration / 60) * 100) / 100
+        })
+
         let data = {
           labels: muscleGroups.map(group => {
               return group.title
@@ -95,9 +99,7 @@ class Totals extends Component {
               borderWidth: 1,
               hoverBackgroundColor: 'rgba(51, 0, 111,0.8)',
               hoverBorderColor: 'rgba(51, 0, 111,1)',
-              data: muscleGroups.map(group => {
-                  return Math.round((group.duration / 60) * 100) / 100
-              })
+              data: dataItems
             }
           ]
         }
@@ -135,14 +137,23 @@ class Totals extends Component {
                     </div>
                 </div>
                 <div className="card-body">
-                    <Bar
-                        data={data}
-                        width={100}
-                        height={200}
-                        options={{
-                            maintainAspectRatio: false
-                        }}
-                    />
+                    { dataItems.length > 0 &&
+                        <Bar
+                            data={data}
+                            width={100}
+                            height={200}
+                            options={{
+                                maintainAspectRatio: false,
+                                scales: {
+                                    yAxes: [{
+                                        ticks: {
+                                            beginAtZero: true
+                                        }
+                                    }]
+                                }
+                            }}
+                        />
+                    }
                 </div>
             </div>
         )
