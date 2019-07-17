@@ -187,7 +187,7 @@ class WorkoutLog extends Component {
                     <i className="fa fa-trash pull-right mt-1 clickable" onClick={() => this.deleteWorkout(workout._id)}></i>
                 </li> 
             )
-        }) : [<li className="list-group-item">There's nothing here</li>];
+        }) : [<li className="list-group-item" key={-1}>There's nothing here</li>];
 
         return (
             <div>
@@ -217,7 +217,7 @@ class WorkoutLog extends Component {
                             {
                                 this.state.pages.map((page, key) => {
                                     return(
-                                        <li className={`page-item ${this.state.page === key ? 'disabled' : ''}`}>
+                                        <li className={`page-item ${this.state.page === key ? 'disabled' : ''}`} key={key}>
                                             <button className="page-link" onClick={() => this.goToPage(key)}>
                                                 {key + 1}
                                             </button>

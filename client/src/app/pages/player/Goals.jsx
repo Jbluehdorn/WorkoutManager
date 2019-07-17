@@ -1,9 +1,10 @@
 import React, { Component } from 'react'
+import GoalsComp from '../../components/Goals'
 
 class Goals extends Component {
     render() {
         return (
-            <h1>Goals</h1>
+            <GoalsComp player={window.user} />
         )
     }
 }

@@ -26,7 +26,7 @@ class Workouts extends Component {
             let allWorkouts = resp.data.body
 
             let userWorkouts = allWorkouts.filter(workout => {
-                return workout.user_id = this.state.user._id;
+                return workout.user_id === this.state.user._id;
             })
 
             userWorkouts.sort((a, b) => {

@@ -22,15 +22,15 @@ let createGoal = async data => {
     return query
 }
 
-let findGoals = () => Goal.find()
+let findGoals = () => Goal.find().populate('muscle_group')
 
 let findActiveGoals = () => Goal.find({
     createdAt: {$gte: start, $lte: end}
-})
+}).populate('muscle_group')
 
-let findGoal = id => Goal.findById(id)
+let findGoal = id => Goal.findById(id).populate('muscle_group')
 
-let removeGoal = id => Goal.findByIdAndDelete(id)
+let removeGoal = id => Goal.findByIdAndDelete(id).populate('muscle_group')
 
 module.exports = {
     createGoal,

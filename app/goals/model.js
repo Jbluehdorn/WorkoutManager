@@ -7,7 +7,7 @@ let GoalSchema = new Schema({
     duration: Number
 }, {
     timestamps: true,
-    toJson: {
+    toJSON: {
         virtuals: true
     },
     toObject: {
