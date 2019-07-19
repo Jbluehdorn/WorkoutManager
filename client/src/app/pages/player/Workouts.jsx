@@ -45,8 +45,8 @@ class Workouts extends Component {
     render() {
         return (
             <div>
-                <WorkoutTotals user={window.user} workouts={this.state.workouts} />
-                <WorkoutLog user={window.user} workouts={this.state.workouts} onChange={this.loadWorkouts} />
+                <WorkoutTotals player={window.user} workouts={this.state.workouts} />
+                <WorkoutLog player={window.user} workouts={this.state.workouts} onChange={this.loadWorkouts} />
             </div>
         )
     }

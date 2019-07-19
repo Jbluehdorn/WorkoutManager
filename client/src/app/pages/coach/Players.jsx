@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
 import API from '../../../API'
+import Goals from '../../components/Goals'
+import Totals from '../../components/WorkoutTotals'
 
 const emailRegex = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/
 
@@ -18,13 +20,14 @@ class Players extends Component {
             playerFormData: {
                 name: '',
                 role_id: 1,
-                group_id: null,
+                group_id: undefined,
                 email: ''
             },
             saving: false,
             searchPredicate: '',
             groupPredicate: undefined,
-            loadingPlayers: false
+            loadingPlayers: false,
+            selectedPlayer: undefined
         }
     }
 
@@ -245,14 +248,19 @@ class Players extends Component {
                                     { this.state.pages[this.state.currPage] &&
                                         this.state.pages[this.state.currPage].map((player, key) => {
                                             return(
-                                                <li className="list-group-item" key={key}>
+                                                <li 
+                                                    className="list-group-item list-group-item-action clickable" 
+                                                    onClick={() => this.setState({
+                                                        selectedPlayer: player
+                                                    })}
+                                                    key={key}>
                                                     {player.name}
                                                 </li>
                                             )
                                         })
                                     }
                                     {
-                                        this.state.filteredPlayers.length === 0 &&
+                                        this.state.filteredPlayers.length === 0 && !this.state.loadingPlayers &&
                                             <li className="list-group-item text-center">
                                                 No Results Found
                                             </li>
@@ -283,6 +291,17 @@ class Players extends Component {
                             </div>
                         </div>
                     </div>
+
+                    {
+                        !!this.state.selectedPlayer &&
+                        <div className="col-9">
+                            <h1 className="mb-1">
+                                {this.state.selectedPlayer.name}
+                            </h1>
+
+                            <Goals player={this.state.selectedPlayer} />
+                        </div>
+                    }
                 </div>
                 
                 {/* CREATE PLAYER MODAL */}

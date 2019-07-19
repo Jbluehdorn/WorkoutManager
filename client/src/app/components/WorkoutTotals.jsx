@@ -26,7 +26,7 @@ class Totals extends Component {
         super(props)
 
         this.state = {
-            user: props.user,
+            user: props.player,
             userWorkouts: props.workouts,
             muscleGroups: [],
             granularity: GRANULARITIES[0]

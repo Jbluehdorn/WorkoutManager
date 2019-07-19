@@ -14,16 +14,35 @@ class Goals extends Component {
         this.state = {
             player: props.player,
             goals: [],
-            workouts: []
+            workouts: [],
+            loading: false
         }
     }
 
     componentDidMount() {
+        this.reload()
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if(prevProps.player !== this.props.player) {
+            this.setState({
+                player: this.props.player
+            })
+        }
+
+        if(prevState.player !== this.state.player) {
+            this.reload()
+        }
+    }
+
+    reload() {
         this.loadGoals()
         this.loadWorkouts()
     }
 
     async loadGoals() {
+        this.setState({ loading: true })
+
         try {
             let resp = await API.get('goals?active="true"')
             let allGoals = resp.data.body
@@ -38,9 +57,13 @@ class Goals extends Component {
         } catch(err) {
             console.log(err)
         }
+
+        this.setState({ loading: false })
     }
 
     async loadWorkouts() {
+        this.setState({ loading: true })
+
         try {
             let resp = await API.get('workouts')
             let allWorkouts = resp.data.body
@@ -55,6 +78,8 @@ class Goals extends Component {
         } catch(err) {
             console.log(err)
         }
+
+        this.setState({ loading: false })
     }
 
     render() {
@@ -67,7 +92,8 @@ class Goals extends Component {
                 </div>
                 <div className="card-body">
                     {
-                        this.state.goals.map((goal, key) => {
+                        !this.state.loading &&
+                        (this.state.goals.length ? this.state.goals.map((goal, key) => {
                             let total = this.state.workouts.reduce((total, workout) => {
                                 if(workout.muscle_group_id === goal.muscle_group_id)
                                     return total + workout.duration
@@ -97,7 +123,13 @@ class Goals extends Component {
                                     <small>{humanizeDuration(total * 60000, {delimiter: ' '})} out of {humanizeDuration(goal.duration * 60000, { delimiter: ' '})}</small>
                                 </div>
                             )
-                        })
+                        }) : <div className="text-center">No Current Goals Set</div>)
+                    }
+                    {
+                        this.state.loading &&
+                        <div className="text-center">
+                            <i className="fa fa-spin fa-spinner"></i>
+                        </div>
                     }
                 </div>
             </div>

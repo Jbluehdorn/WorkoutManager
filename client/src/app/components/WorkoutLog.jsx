@@ -10,7 +10,7 @@ class WorkoutLog extends Component {
         super(props)
 
         this.state = {
-            user: props.user,
+            user: props.player,
             userWorkouts: props.workouts,
             pages: [],
             page: 0,
