@@ -9,6 +9,7 @@ class Players extends Component {
 
         this.state = {
             players: [],
+            filteredPlayers: '',
             perPage: 5,
             currPage: 0,
             pages: [],
@@ -20,7 +21,10 @@ class Players extends Component {
                 group_id: null,
                 email: ''
             },
-            saving: false
+            saving: false,
+            searchPredicate: '',
+            groupPredicate: undefined,
+            loadingPlayers: false
         }
     }
 
@@ -31,8 +35,16 @@ class Players extends Component {
     }
     
     componentDidUpdate(prevProps, prevState) {
-        if(prevState.players !== this.state.players) {
+        let state = this.state;
+
+        if(prevState.filteredPlayers !== state.filteredPlayers) {
             this.paginatePlayers()
+        }
+
+        if(prevState.searchPredicate !== state.searchPredicate || 
+            prevState.groupPredicate !== state.groupPredicate ||
+            prevState.players !== state.players) {
+            this.filter()
         }
     }
     
@@ -62,6 +74,8 @@ class Players extends Component {
     }
 
     async loadPlayers() {
+        this.setState({ loadingPlayers: true })
+
         try {
             let resp = await API.get(`users`)
             let allUsers = resp.data.body
@@ -71,15 +85,18 @@ class Players extends Component {
             })
 
             this.setState({
-                players: players
+                players: players,
+                filteredPlayers: players
             })
         } catch(err) {
             console.log(err)
         }
+
+        this.setState({ loadingPlayers: false })
     }
 
     paginatePlayers() {
-        let players = this.state.players.slice()
+        let players = this.state.filteredPlayers.slice()
         let cursor = 0
         let pages = []
         let perPage = this.state.perPage
@@ -95,6 +112,26 @@ class Players extends Component {
 
         this.setState({
             pages: pages
+        })
+    }
+
+    filter() {
+        let players = this.state.players.slice()
+        let search = this.state.searchPredicate.toLowerCase()
+        let groupID = this.state.groupPredicate
+
+        //Limit by group
+        players = groupID ? players.filter(player => {
+            return player.group_id === groupID
+        }) : players
+
+        //Limit by search
+        players = search.length ? players.filter(player => {
+            return player.name.toLowerCase().includes(search)
+        }) : players
+
+        this.setState({
+            filteredPlayers: players
         })
     }
 
@@ -183,8 +220,21 @@ class Players extends Component {
                                 <h3 className="card-title mb-0">Players</h3>
                             </div>
                             <div className="card-body p-1">
-                                <input type="text" className="form-control mb-1" placeholder="Search..."/>
-                                <select className="form-control mb-1">
+                                <input 
+                                    value={this.state.searchPredicate}
+                                    onChange={(e) => this.setState({searchPredicate: e.target.value})}
+                                    type="text" 
+                                    className="form-control mb-1" 
+                                    placeholder="Search..."/>
+                                <select 
+                                    value={this.state.groupPredicate}
+                                    onChange={(e) => {
+                                        let val = e.target.value
+                                        this.setState({
+                                            groupPredicate: val >= 0 ? parseInt(val) : undefined
+                                        })
+                                    }}
+                                    className="form-control mb-1">
                                     <option value="-1">Position Group....</option>
                                     {
                                         positionGroupOptionItems
@@ -201,7 +251,13 @@ class Players extends Component {
                                             )
                                         })
                                     }
-                                    { this.state.pages.length === 0 &&
+                                    {
+                                        this.state.filteredPlayers.length === 0 &&
+                                            <li className="list-group-item text-center">
+                                                No Results Found
+                                            </li>
+                                    }
+                                    { this.state.loadingPlayers &&
                                         <li className="list-group-item text-center">
                                             <i className="fa fa-spinner fa-spin"></i>
                                         </li>
