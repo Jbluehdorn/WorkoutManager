@@ -27,7 +27,8 @@ class Players extends Component {
             searchPredicate: '',
             groupPredicate: undefined,
             loadingPlayers: false,
-            selectedPlayer: undefined
+            selectedPlayer: undefined,
+            playerWorkouts: []
         }
     }
 
@@ -48,6 +49,10 @@ class Players extends Component {
             prevState.groupPredicate !== state.groupPredicate ||
             prevState.players !== state.players) {
             this.filter()
+        }
+
+        if(!!state.selectedPlayer && prevState.selectedPlayer !== state.selectedPlayer) {
+            this.loadPlayerWorkouts()
         }
     }
     
@@ -89,8 +94,7 @@ class Players extends Component {
 
             this.setState({
                 players: players,
-                filteredPlayers: players,
-                selectedPlayer: players[0]
+                filteredPlayers: players
             })
         } catch(err) {
             console.log(err)
@@ -150,6 +154,19 @@ class Players extends Component {
                     ...this.state.playerFormData,
                     group_id: groups[0].id
                 }
+            })
+        } catch(err) {
+            console.log(err)
+        }
+    }
+
+    async loadPlayerWorkouts() {
+        try {
+            let resp = await API.get(`workouts/user/${this.state.selectedPlayer._id}`)
+            let workouts = resp.data.body
+
+            this.setState({
+                playerWorkouts: workouts
             })
         } catch(err) {
             console.log(err)
@@ -293,16 +310,25 @@ class Players extends Component {
                         </div>
                     </div>
 
-                    {
-                        !!this.state.selectedPlayer &&
-                        <div className="col-9 pl-0">
-                            <h1 className="mb-1">
-                                {this.state.selectedPlayer.name}
-                            </h1>
-
-                            <Goals player={this.state.selectedPlayer} admin={true}/>
-                        </div>
-                    }
+                    <div className="col-9 pl-0">
+                        {
+                            !!this.state.selectedPlayer &&
+                                <div>
+                                    <h1 className="mb-1">
+                                        {this.state.selectedPlayer.name}
+                                    </h1>
+                                    
+                                    <Totals player={this.state.selectedPlayer} workouts={this.state.playerWorkouts} />
+                                    <Goals player={this.state.selectedPlayer} admin={true} onChange={() => this.loadPlayerWorkouts()}/>
+                                </div>
+                        }
+                        {
+                            !!!this.state.selectedPlayer &&
+                                <p className="text-left">
+                                    Select a player...
+                                </p>
+                        }
+                    </div>
                 </div>
                 
                 {/* CREATE PLAYER iL */}

@@ -30,6 +30,16 @@ exports.find = async (req, res) => {
     }
 }
 
+exports.findByUser = async (req, res) => {
+    try {
+        let workouts = await repo.findWorkoutsByUser(req.params.userID)
+        console.log(`Workouts for user ${req.params.id} requested`)
+        res.success(workouts)
+    } catch(err) {
+        res.error(err)
+    }
+}
+
 exports.delete = async(req, res) => {
     try {
         await repo.deleteWorkout(req.params.id)

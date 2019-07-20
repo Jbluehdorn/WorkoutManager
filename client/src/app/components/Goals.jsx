@@ -19,7 +19,8 @@ class Goals extends Component {
             admin: props.admin ? props.admin : false,
             manageGoalsDialogShown: false,
             muscleGroups: [],
-            saving: false
+            saving: false,
+            onChange: props.onChange ? props.onChange : function() {return;}
         }
     }
 
@@ -143,6 +144,7 @@ class Goals extends Component {
 
             this.loadGoals()
             this.closeAndResetForm()
+            this.state.onChange()
         } catch(err) {
             console.log(err)
         }
@@ -161,7 +163,7 @@ class Goals extends Component {
     render() {
         return (
             <div>
-                <div className="card">
+                <div className="card mb-1">
                     <div className="card-header">
                         <h1 className="card-title mb-0">
                             Weekly Goals
