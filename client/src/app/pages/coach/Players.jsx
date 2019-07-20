@@ -89,7 +89,8 @@ class Players extends Component {
 
             this.setState({
                 players: players,
-                filteredPlayers: players
+                filteredPlayers: players,
+                selectedPlayer: players[0]
             })
         } catch(err) {
             console.log(err)
@@ -294,17 +295,17 @@ class Players extends Component {
 
                     {
                         !!this.state.selectedPlayer &&
-                        <div className="col-9">
+                        <div className="col-9 pl-0">
                             <h1 className="mb-1">
                                 {this.state.selectedPlayer.name}
                             </h1>
 
-                            <Goals player={this.state.selectedPlayer} />
+                            <Goals player={this.state.selectedPlayer} admin={true}/>
                         </div>
                     }
                 </div>
                 
-                {/* CREATE PLAYER MODAL */}
+                {/* CREATE PLAYER iL */}
                 <div className={`modal ${this.state.newPlayerDialogOpen ? 'shown' : ''}`} role="dialog" tabIndex="1">
                     <div className="modal-dialog shadow-lg">
                         <div className="modal-content">

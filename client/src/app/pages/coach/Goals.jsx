@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import API from '../../../API'
+import humanizeDuration from 'humanize-duration'
 
 class Goals extends Component {
     constructor(props) {
@@ -424,7 +425,7 @@ class Goals extends Component {
                                     this.state.muscleGroups.map((group, key) => {
                                         return (
                                             <div className="form-group" key={key}>
-                                                <label>{group.title} - {group.duration} mins</label>
+                                                <label>{group.title} { group.duration > 0 && `- ${humanizeDuration(group.duration * 60000, {delimiter: ' '})}`}</label>
                                                 <input 
                                                     type="range" 
                                                     className="form-control" 
