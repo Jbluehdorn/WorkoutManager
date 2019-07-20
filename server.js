@@ -1,4 +1,5 @@
 import express from 'express'
+import cors from 'cors'
 import customResponses from './middleware/customResponses'
 import bodyParser from 'body-parser'
 
@@ -7,9 +8,8 @@ const app = express()
 //Configure Mongoose 
 require('./mongoose/config')(app)
 
-//Config views
-app.set('view engine', 'pug')
-app.set('views', `${process.cwd()}/views`)
+//Enable CORS
+app.use(cors())
 
 //Config requests and responses
 app.use(customResponses)
