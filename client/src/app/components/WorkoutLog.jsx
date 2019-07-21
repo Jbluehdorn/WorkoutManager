@@ -147,7 +147,6 @@ class WorkoutLog extends Component {
                 break
             case 'select-one':
                 value = this.state.allMuscleGroups.find((group) => {
-                    console.log(group._id, event.target.value)
                     return group._id === event.target.value
                 })
                 break

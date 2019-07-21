@@ -370,10 +370,6 @@ class Players extends Component {
                                         }
                                     </select>
                                 </div>
-
-                                <code>
-                                    {JSON.stringify(this.state.playerFormData)}
-                                </code>
                             </div>
                             <div className="modal-footer py-2">
                                 <div className="text-right">

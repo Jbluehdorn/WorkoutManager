@@ -2,8 +2,8 @@ import mongoose from 'mongoose'
 import moment from 'moment'
 import _ from 'lodash'
 
-let start = moment.utc().startOf('week').add(1, 'day')
-let end = moment.utc().endOf('week').add(1, 'day')
+let start = moment().startOf('week').add(1, 'day')
+let end = moment().endOf('week').add(1, 'day')
 
 let Goal = mongoose.model('goal')
 

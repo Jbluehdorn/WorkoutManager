@@ -9,11 +9,11 @@ const moment = extendMoment(Moment)
 const GRANULARITIES = [
     {
         title: 'This Week',
-        range: moment().range(moment().utc().startOf('week').add(1, 'day'), moment().utc().endOf('week').add(1, 'day'))
+        range: moment().range(moment().startOf('week').add(1, 'day'), moment().endOf('week').add(1, 'day'))
     },
     {
         title: 'This Month',
-        range: moment().range(moment().utc().startOf('month'), moment().utc().endOf('month'))
+        range: moment().range(moment().startOf('month'), moment().utc().endOf('month'))
     },
     {
         title: 'All Time',
@@ -75,7 +75,9 @@ class Totals extends Component {
             let groupClone = Object.assign({}, group)
 
             this.state.userWorkouts.forEach(workout => {
-                if(this.state.granularity.range.contains(moment(workout.date), {exclusive: false}) && group.id === workout.muscle_group_id) {
+                let temp = new Date(workout.date)
+                let tempDate = moment([temp.getUTCFullYear(), temp.getUTCMonth(), temp.getUTCDate()])
+                if(this.state.granularity.range.contains(tempDate, {exclusive: false}) && group.id === workout.muscle_group_id) {
                     groupClone.duration += workout.duration
                 }
             })

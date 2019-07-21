@@ -11,10 +11,20 @@ exports.create = async (req, res) => {
 }
 
 exports.list = async (req, res) => {
+    let type = !!req.query.type ? req.query.type : undefined
     try {
         let users = await repo.findUsers()
-        console.log('All users requested')
-        res.success(users)
+        if(type && type.toLowerCase() === 'players') {
+            users = users.filter(user => {
+                return user.role_id === 1
+            })
+
+            console.log('All players requested')
+            res.success(users)
+        } else {
+            console.log('All users requested')
+            res.success(users)
+        }
     } catch(err) {
         res.error(err)
     }

@@ -5,7 +5,7 @@ import Moment from 'moment'
 import { extendMoment } from 'moment-range'
 
 const moment = extendMoment(Moment)
-const range = moment().range(moment().utc().startOf('week').add(1, 'day'), moment().utc().endOf('week').add(1, 'day'))
+const range = moment().range(moment().startOf('week').add(1, 'day'), moment().endOf('week').add(1, 'day'))
 
 class Goals extends Component {
     constructor(props) {
@@ -96,7 +96,9 @@ class Goals extends Component {
             let allWorkouts = resp.data.body
 
             let userWorkouts = allWorkouts.filter(workout => {
-                return workout.user_id === this.state.player._id && range.contains(moment(workout.date))
+                let temp = new Date(workout.date)
+                let tempDate = moment([temp.getUTCFullYear(), temp.getUTCMonth(), temp.getUTCDate()])
+                return workout.user_id === this.state.player._id && range.contains(tempDate)
             })
 
             this.setState({
