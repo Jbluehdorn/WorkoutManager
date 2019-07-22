@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon bootstrap.js"
+    "start": "nodemon bootstrap.js",
+    "test": "mocha tests/bootstrap.js"
   },
   "keywords": [],
   "author": "",
@@ -36,5 +37,9 @@
     "react-dom": "^16.8.6",
     "react-router-config": "^5.0.1",
     "react-router-dom": "^5.0.1"
+  },
+  "devDependencies": {
+    "mocha": "^6.2.0",
+    "supertest": "^4.0.2"
   }
 }
