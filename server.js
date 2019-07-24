@@ -1,6 +1,6 @@
 import express from 'express'
 import cors from 'cors'
-import customResponses from './middleware/customResponses'
+import customResponses from './middleware/customResponses.js'
 import bodyParser from 'body-parser'
 
 const app = express()

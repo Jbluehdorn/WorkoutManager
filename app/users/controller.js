@@ -26,6 +26,7 @@ exports.list = async (req, res) => {
             res.success(users)
         }
     } catch(err) {
+	    console.log(err)
         res.error(err)
     }
 }
