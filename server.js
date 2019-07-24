@@ -2,6 +2,7 @@ import express from 'express'
 import cors from 'cors'
 import customResponses from './middleware/customResponses.js'
 import bodyParser from 'body-parser'
+import path from 'path'
 
 const app = express()
 
@@ -21,8 +22,9 @@ app.use(bodyParser.json())
 //Register the api router
 require('./app/api')(app)
 
+app.use(express.static(path.join(__dirname, 'client/build')))
 app.get('/', (req, res) => {
-    res.send('API')
+    res.sendFile('/client/build/index.html')
 })
 
 const port = process.env.PORT
